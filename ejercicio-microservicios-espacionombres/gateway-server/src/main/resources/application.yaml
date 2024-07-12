@@ -1,0 +1,74 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      defecto:
+        sliding-window-size: 6
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 20s
+        permitted-number-of-calls-in-half-open-state: 4
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+    instances:
+      productos:
+        base-config: defecto
+  timelimiter:
+    configs:
+      defecto:
+        timeout-duration: 2s
+    instances:
+      productos:
+        base-config: defecto
+spring:
+  application:
+    name: servicio-gateway-server
+  cloud:
+    gateway:
+      routes:
+        - id: servicio-productos
+          uri: lb://servicio-productos
+          predicates:
+            - Path=/api/productos/**
+            #- Header=Authorization, \d+
+            #- Header=Content-Type,application/json
+            #- Method=GET, POST
+            #- Query=color, verde
+            #- Cookie=deporte, futbol
+          filters:
+            #            - name: CircuitBreaker
+            #              args:
+            #                name: productos
+            #                statusCodes: 500, 404
+            #                fallbackUri: forward:/api/items/item/2/3
+            - StripPrefix=2
+            - name: EjemploCookie
+              args:
+                mensaje: Hola mi mensaje personalizado
+                cookieLlave: usuario
+                cookieValor: StevenCalderon
+        - id: servicio-items
+          uri: lb://servicio-items
+          predicates:
+            - Path=/api/items/**
+          filters:
+            - StripPrefix=2
+            #- AddRequestHeader=token-request, 123456
+            #- AddResponseHeader=token-response, 98765
+            #- AddRequestParameter=nombre, steven
+        - id: servicio-usuarios
+          uri: lb://servicio-usuarios
+          predicates:
+            - Path=/api/usuarios/**
+          filters:
+            - StripPrefix=2
+        - id: servicio-oauth
+          uri: lb://servicio-oauth
+          predicates:
+            - Path=/api/security/**
+          filters:
+            - StripPrefix=2
+server:
+  port: 8090
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

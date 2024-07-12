@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: config-server
+#  profiles:
+#    active: native
+#  cloud:
+#    config:
+#      server:
+#        native:
+#          searchLocations: 'file:///C:/Desarrollo/Cursos/SpringCloud/configuracion'
+  cloud:
+    config:
+      server:
+        git:
+          uri: 'https://github.com/scalde44/curso-microservicios.git'
+          searchPaths: 'configuracion'
+          username: scalde44
+          password: Scalderon1504
+server:
+  port: 8888

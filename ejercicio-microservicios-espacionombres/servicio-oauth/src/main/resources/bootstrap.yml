@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: servicio-oauth
+  cloud:
+    config:
+      url: http://localhost:8888
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
